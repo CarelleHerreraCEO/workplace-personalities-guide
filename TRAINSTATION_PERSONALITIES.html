@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unleash Your Inner Animal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --tsi-black: #000000;
+            --tsi-white: #FFFFFF;
+            --tsi-ruby-red: #E6333A;
+            --tsi-grey: #545454;
+            --tsi-dark-ruby: #7D0C11;
+            --tsi-orange: #ff5c00;
+            --tsi-off-white: #FFF7EC;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--tsi-off-white);
+            color: var(--tsi-black);
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 100%;
+            max-width: 500px;
+            max-height: 400px;
+        }
+        .text-shadow-custom {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .card {
+            background-color: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        }
+
+        .panther-border { border-color: var(--tsi-ruby-red); }
+        .peacock-border { border-color: var(--tsi-orange); }
+        .dolphin-border { border-color: var(--tsi-grey); }
+        .owl-border { border-color: var(--tsi-dark-ruby); }
+
+        .panther-text { color: var(--tsi-ruby-red); }
+        .peacock-text { color: var(--tsi-orange); }
+        .dolphin-text { color: var(--tsi-grey); }
+        .owl-text { color: var(--tsi-dark-ruby); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="text-center py-16 px-4 bg-white">
+        <h1 class="text-4xl md:text-6xl font-black text-shadow-custom tracking-tight" style="color: var(--tsi-ruby-red);">Unleash Your Inner Animal</h1>
+        <p class="mt-4 text-lg md:text-xl text-tsi-grey max-w-3xl mx-auto">A visual guide to the four key workplace personalities. Understand your colleagues—and yourself—better than ever before.</p>
+        <!-- Removed "Because The Amazing Is Possible!" as requested -->
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+
+        <section id="overview" class="mb-24">
+            <h2 class="text-4xl font-bold text-center mb-12">Meet the Workplace Animals</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="card text-center border-t-8 panther-border">
+                    <div class="text-6xl mb-4">🐾</div>
+                    <h3 class="text-2xl font-bold panther-text">The Panther</h3>
+                    <p class="font-light text-tsi-grey">The Driver</p>
+                </div>
+                <div class="card text-center border-t-8 peacock-border">
+                    <div class="text-6xl mb-4">🦚</div>
+                    <h3 class="text-2xl font-bold peacock-text">The Peacock</h3>
+                    <p class="font-light text-tsi-grey">The Influencer</p>
+                </div>
+                <div class="card text-center border-t-8 dolphin-border">
+                    <div class="text-6xl mb-4">🐬</div>
+                    <h3 class="text-2xl font-bold dolphin-text">The Dolphin</h3>
+                    <p class="font-light text-tsi-grey">The Supporter</p>
+                </div>
+                <div class="card text-center border-t-8 owl-border">
+                    <div class="text-6xl mb-4">🦉</div>
+                    <h3 class="text-2xl font-bold owl-text">The Owl</h3>
+                    <p class="font-light text-tsi-grey">The Analyst</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="comparison-charts" class="mb-24">
+             <h2 class="text-4xl font-bold text-center mb-4">At a Glance Comparison</h2>
+             <p class="text-center text-tsi-grey max-w-2xl mx-auto mb-12">How do the four personalities stack up? These charts reveal their distinct approaches to communication and work pace.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="card">
+                    <h3 class="text-xl font-bold text-center mb-2">Communication Styles</h3>
+                    <p class="text-center text-sm text-tsi-grey mb-4">This chart compares the general communication tendencies of each personality type across key traits.</p>
+                    <div class="chart-container">
+                        <canvas id="communicationStyleChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="text-xl font-bold text-center mb-2">Pace & Focus</h3>
+                     <p class="text-center text-sm text-tsi-grey mb-4">This visualization shows where each personality focuses their energy, balancing between speed and deliberation, tasks and people.</p>
+                    <div class="chart-container">
+                        <canvas id="paceFocusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="deep-dive" class="mb-16">
+            <h2 class="text-4xl font-bold text-center mb-12">A Deeper Dive into Each Personality</h2>
+
+            <div class="space-y-16">
+                <div class="card grid grid-cols-1 md:grid-cols-2 gap-8 items-center border-t-8 panther-border">
+                    <div>
+                        <h3 class="text-3xl font-bold panther-text mb-4">🐾 The Panther: The Driver</h3>
+                        <p class="text-tsi-grey mb-4">**Origins:** Think of a Panther charging through the jungle – focused, powerful, and ready to pounce. This personality type is all about getting things done and leading the way.</p>
+                        <h4 class="font-bold mb-2">Core Traits:</h4>
+                        <ul class="list-disc list-inside text-tsi-grey space-y-1">
+                            <li>**Action-Oriented & Decisive:** Driven, intense, works at a very fast pace. Prioritizes results and what they want to achieve.</li>
+                            <li>**Direct Communicator:** Prefers to be clear, specific, and to the point. Speaks in a strong, clear, and confident tone.</li>
+                            <li>**Leader & Controller:** Naturally takes on leadership roles and needs to be in control.</li>
+                            <li>**Thrives on Challenge:** Energized by tough assignments, challenges, and opportunities to lead. Pressure and change motivate them.</li>
+                        </ul>
+                        <h4 class="font-bold mb-2 mt-4">Body Language & Tone:</h4>
+                        <ul class="list-disc list-inside text-tsi-grey space-y-1">
+                            <li>Keeps distance, strong handshake, leans forward, direct eye contact.</li>
+                            <li>Strong, clear, confident, fast-paced tone.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-center mb-2">Motivators vs. Dislikes</h4>
+                        <p class="text-center text-sm text-tsi-grey mb-4">What energizes them and what they prefer to avoid.</p>
+                        <div class="chart-container !h-[30vh] md:!h-[40vh]">
+                            <canvas id="pantherChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card grid grid-cols-1 md:grid-cols-2 gap-8 items-center border-t-8 peacock-border">
+                     <div>
+                        <h3 class="text-3xl font-bold peacock-text mb-4">🦚 The Peacock: The Influencer</h3>
+                        <p class="text-tsi-grey mb-4">**Origins:** Picture a Peacock displaying its vibrant feathers – confident, expressive, and seeking attention. This personality type thrives on social interaction and inspiring others.</p>
+                        <h4 class="font-bold mb-2">Core Traits:</h4>
+                        <ul class="list-disc list-inside text-tsi-grey space-y-1">
+                            <li>**Enthusiastic & Expressive:** Animated, excitable, with an enthusiastic tone and varied modulations. Loves to talk about dreams and aspirations.</li>
+                            <li>**People-Oriented:** Thrives on people interactions, a great rapport builder, needs to be the center of attention.</li>
+                            <li>**Optimistic & Fun-Loving:** Energized by stimulation and fun.</li>
+                            <li>**Social & Persuasive:** Enjoys socializing, persuasive and colorful in communication.</li>
+                        </ul>
+                        <h4 class="font-bold mb-2 mt-4">Body Language & Tone:</h4>
+                        <ul class="list-disc list-inside text-tsi-grey space-y-1">
+                            <li>Gets close, smiles, relaxes, uses expressive gestures, friendly eye contact.</li>
+                            <li>Enthusiastic, fast-paced, and varied tone.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-center mb-2">Motivators vs. Dislikes</h4>
+                        <p class="text-center text-sm text-tsi-grey mb-4">What energizes them and what they prefer to avoid.</p>
+                        <div class="chart-container !h-[30vh] md:!h-[40vh]">
+                            <canvas id="peacockChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card grid grid-cols-1 md:grid-cols-2 gap-8 items-center border-t-8 dolphin-border">
+                     <div>
+                        <h3 class="text-3xl font-bold dolphin-text mb-4">🐬 The Dolphin: The Supporter</h3>
+                        <p class="text-tsi-grey mb-4">**Origins:** Imagine a Dolphin, calm and cooperative, moving gracefully through water in harmony with its pod. This personality type values stability, harmony, and supporting others.</p>
+                        <h4 class="font-bold mb-2">Core Traits:</h4>
+                        <ul class="list-disc list-inside text-tsi-grey space-y-1">
+                            <li>**Calm & Cooperative:** Easy-going, rarely in a hurry, willing to be of service. Tone is warm, soft, and calm.</li>
+                            <li>**Harmonious & Loyal:** Natural peacemaker, seeks defined territory and a feeling of security. Dislikes confrontation.</li>
+                            <li>**Relationship-Focused:** Prioritizes feelings and experiences, valuing togetherness and support.</li>
+                            <li>**Patient:** Takes their time and prefers a steady pace.</li>
+                        </ul>
+                        <h4 class="font-bold mb-2 mt-4">Body Language & Tone:</h4>
+                        <ul class="list-disc list-inside text-tsi-grey space-y-1">
+                            <li>Relaxed and calm, may lean back, uses small gestures, friendly eye contact.</li>
+                            <li>Steady and low tone.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-center mb-2">Motivators vs. Dislikes</h4>
+                        <p class="text-center text-sm text-tsi-grey mb-4">What energizes them and what they prefer to avoid.</p>
+                        <div class="chart-container !h-[30vh] md:!h-[40vh]">
+                            <canvas id="dolphinChart"></canvas>
+                        </div>
+                    </div>
+                    </div>
+
+                <div class="card grid grid-cols-1 md:grid-cols-2 gap-8 items-center border-t-8 owl-border">
+                     <div>
+                        <h3 class="text-3xl font-bold owl-text mb-4">🦉 The Owl: The Analyst</h3>
+                        <p class="text-tsi-grey mb-4">**Origins:** Think of a wise Owl, observant and methodical, meticulously analyzing its surroundings. This personality type is precise, detail-oriented, and highly focused on facts and quality.</p>
+                        <h4 class="font-bold mb-2">Core Traits:</h4>
+                        <ul class="list-disc list-inside text-tsi-grey space-y-1">
+                            <li>**Analytical & Accurate:** Thorough, pays attention to detail, prefers facts and figures. Energized by analysis and research.</li>
+                            <li>**Quality-Oriented:** Insists on quality standards and compliance to rules.</li>
+                            <li>**Information Provider:** Needs focus and direction, relies on references and lots of paperwork.</li>
+                            <li>**Controlled & Precise:** Tone is controlled, thoughtful, and precise, with little modulation.</li>
+                        </ul>
+                        <h4 class="font-bold mb-2 mt-4">Body Language & Tone:</h4>
+                        <ul class="list-disc list-inside text-tsi-grey space-y-1">
+                            <li>Keeps distance, sits across from you, firm posture, direct eye contact with minimal hand gestures.</li>
+                            <li>Slow-paced tone.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-center mb-2">Motivators vs. Dislikes</h4>
+                        <p class="text-center text-sm text-tsi-grey mb-4">What energizes them and what they prefer to avoid.</p>
+                        <div class="chart-container !h-[30vh] md:!h-[40vh]">
+                            <canvas id="owlChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-to-connect" class="mb-16">
+            <h2 class="text-4xl font-bold text-center mb-4">How to Connect</h2>
+            <p class="text-center text-tsi-grey max-w-2xl mx-auto mb-12">Tailor your approach to build stronger relationships with every personality type.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="p-6 rounded-2xl bg-white border-t-4 panther-border">
+                    <h3 class="font-bold text-lg panther-text">With a Panther 🐾</h3>
+                    <ul class="mt-2 text-sm text-tsi-grey list-disc list-inside space-y-1">
+                        <li>Be direct and business-focused: Get straight to the point and stick to the task at hand.</li>
+                        <li>Be prepared: Have your facts ready and provide alternatives.</li>
+                        <li>Focus on results: Emphasize how your ideas lead to tangible outcomes.</li>
+                        <li>Respect their time: Be mindful of time and don't drag things out.</li>
+                        <li>Challenge ideas, not them: Take issue with facts, not the person.</li>
+                    </ul>
+                </div>
+                <div class="p-6 rounded-2xl bg-white border-t-4 peacock-border">
+                    <h3 class="font-bold text-lg peacock-text">With a Peacock 🦚</h3>
+                    <ul class="mt-2 text-sm text-tsi-grey list-disc list-inside space-y-1">
+                        <li>Have fun with them: Engage in lighthearted conversation and support their dreams.</li>
+                        <li>Talk about people and goals: Discuss ideas that involve social recognition or excitement.</li>
+                        <li>Ask for opinions: Make them feel special and included.</li>
+                        <li>Allow time for socializing: Don't rush into business; build a connection first.</li>
+                        <li>Put details in writing: They might focus on the big picture, so important specifics need to be documented.</li>
+                    </ul>
+                </div>
+                <div class="p-6 rounded-2xl bg-white border-t-4 dolphin-border">
+                    <h3 class="font-bold text-lg dolphin-text">With a Dolphin 🐬</h3>
+                    <ul class="mt-2 text-sm text-tsi-grey list-disc list-inside space-y-1">
+                        <li>Start with a personal connection: Listen and build rapport before diving into tasks.</li>
+                        <li>Present logically and non-threateningly: Avoid direct confrontation.</li>
+                        <li>Be patient and provide assurance: Give them time for decisions and address any hurt feelings.</li>
+                        <li>Emphasize security and stability: Reassure them about changes and future plans.</li>
+                    </ul>
+                </div>
+                <div class="p-6 rounded-2xl bg-white border-t-4 owl-border">
+                    <h3 class="font-bold text-lg owl-text">With an Owl 🦉</h3>
+                    <ul class="mt-2 text-sm text-tsi-grey list-disc list-inside space-y-1">
+                        <li>Prepare your case thoroughly: Provide ample information, data, and facts.</li>
+                        <li>Approach directly but thoughtfully: Be straightforward and present specifics.</li>
+                        <li>Give time for decisions: They need time to analyze and research.</li>
+                        <li>Be loyal, fair, and consistent: They value integrity and predictability.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-tsi-black text-tsi-off-white text-center py-8 px-4">
+        <p class="text-sm">This guide is inspired by behavioral models including DISC and the Four Temperaments.</p>
+        <p class="text-xs opacity-70 mt-1">Brought to you by Trainstation.</p>
+        <p class="text-xs opacity-70 mt-1">For educational purposes only. Not a substitute for a professional assessment.</p>
+    </footer>
+
+    <script>
+        const tooltipConfig = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' ');
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        };
+
+        const wrapLabel = (label) => {
+            const maxLength = 16;
+            if (label.length <= maxLength) return label;
+            
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+
+            words.forEach(word => {
+                if ((currentLine + word).length > maxLength) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            });
+            lines.push(currentLine.trim());
+            return lines;
+        };
+        
+        const createBarChart = (ctx, labels, data, backgroundColor, borderColor) => {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels.map(wrapLabel),
+                    datasets: [{
+                        label: 'Impact Score',
+                        data: data,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        borderWidth: 2,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    ...tooltipConfig,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 10,
+                            grid: { display: false },
+                            ticks: { display: false }
+                        },
+                        y: {
+                           grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        ...tooltipConfig.plugins,
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        };
+
+        const pantherData = {
+            labels: ['Results', 'Power', 'Wasting Time', 'Lack of Respect'],
+            data: [10, 8, -9, -7],
+            backgrounds: ['var(--tsi-ruby-red)', 'var(--tsi-ruby-red)', '#FF6B6B', '#FF6B6B'],
+            borders: ['var(--tsi-ruby-red)', 'var(--tsi-ruby-red)', '#FF6B6B', '#FF6B6B']
+        };
+        createBarChart(document.getElementById('pantherChart').getContext('2d'), pantherData.labels, pantherData.data, pantherData.backgrounds, pantherData.borders);
+
+        const peacockData = {
+            labels: ['Recognition', 'Fun', 'Social Rejection', 'Negativity'],
+            data: [10, 9, -9, -8],
+            backgrounds: ['var(--tsi-orange)', 'var(--tsi-orange)', '#FF6B6B', '#FF6B6B'],
+            borders: ['var(--tsi-orange)', 'var(--tsi-orange)', '#FF6B6B', '#FF6B6B']
+        };
+        createBarChart(document.getElementById('peacockChart').getContext('2d'), peacockData.labels, peacockData.data, peacockData.backgrounds, peacockData.borders);
+
+        const dolphinData = {
+            labels: ['Approval', 'Harmony', 'Confrontation', 'Surprises'],
+            data: [10, 9, -10, -8],
+            backgrounds: ['var(--tsi-grey)', 'var(--tsi-grey)', '#FF6B6B', '#FF6B6B'],
+            borders: ['var(--tsi-grey)', 'var(--tsi-grey)', '#FF6B6B', '#FF6B6B']
+        };
+        createBarChart(document.getElementById('dolphinChart').getContext('2d'), dolphinData.labels, dolphinData.data, dolphinData.backgrounds, dolphinData.borders);
+
+        const owlData = {
+            labels: ['Accuracy', 'Responsibility', 'Being Wrong', 'Hasty Decisions'],
+            data: [10, 8, -10, -9],
+            backgrounds: ['var(--tsi-dark-ruby)', 'var(--tsi-dark-ruby)', '#FF6B6B', '#FF6B6B'],
+            borders: ['var(--tsi-dark-ruby)', 'var(--tsi-dark-ruby)', '#FF6B6B', '#FF6B6B']
+        };
+        createBarChart(document.getElementById('owlChart').getContext('2d'), owlData.labels, owlData.data, owlData.backgrounds, owlData.borders);
+        
+        new Chart(document.getElementById('communicationStyleChart').getContext('2d'), {
+            type: 'radar',
+            data: {
+                labels: ['Directness', 'Enthusiasm', 'Patience', 'Warmth', 'Precision'],
+                datasets: [
+                    {
+                        label: 'Panther',
+                        data: [10, 3, 2, 3, 7],
+                        backgroundColor: 'rgba(230, 51, 58, 0.2)',
+                        borderColor: 'var(--tsi-ruby-red)',
+                        pointBackgroundColor: 'var(--tsi-ruby-red)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'var(--tsi-ruby-red)'
+                    },
+                    {
+                        label: 'Peacock',
+                        data: [7, 10, 4, 9, 4],
+                        backgroundColor: 'rgba(255, 92, 0, 0.2)',
+                        borderColor: 'var(--tsi-orange)',
+                        pointBackgroundColor: 'var(--tsi-orange)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'var(--tsi-orange)'
+                    },
+                    {
+                        label: 'Dolphin',
+                        data: [4, 6, 9, 10, 5],
+                        backgroundColor: 'rgba(84, 84, 84, 0.2)',
+                        borderColor: 'var(--tsi-grey)',
+                        pointBackgroundColor: 'var(--tsi-grey)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'var(--tsi-grey)'
+                    },
+                    {
+                        label: 'Owl',
+                        data: [8, 2, 8, 3, 10],
+                        backgroundColor: 'rgba(125, 12, 17, 0.2)',
+                        borderColor: 'var(--tsi-dark-ruby)',
+                        pointBackgroundColor: 'var(--tsi-dark-ruby)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'var(--tsi-dark-ruby)'
+                    }
+                ]
+            },
+            options: {
+                ...tooltipConfig,
+                maintainAspectRatio: false,
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: false
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 10,
+                        pointLabels: {
+                            font: {
+                                size: 14
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('paceFocusChart').getContext('2d'), {
+            type: 'bubble',
+            data: {
+                datasets: [
+                    {
+                        label: 'Panther',
+                        data: [{x: 8, y: 8, r: 15}],
+                        backgroundColor: 'rgba(230, 51, 58, 0.7)',
+                        borderColor: 'var(--tsi-ruby-red)'
+                    },
+                    {
+                        label: 'Peacock',
+                        data: [{x: 7, y: 3, r: 20}],
+                        backgroundColor: 'rgba(255, 92, 0, 0.7)',
+                        borderColor: 'var(--tsi-orange)'
+                    },
+                    {
+                        label: 'Dolphin',
+                        data: [{x: 3, y: 2, r: 18}],
+                        backgroundColor: 'rgba(84, 84, 84, 0.7)',
+                        borderColor: 'var(--tsi-grey)'
+                    },
+                    {
+                        label: 'Owl',
+                        data: [{x: 2, y: 9, r: 16}],
+                        backgroundColor: 'rgba(125, 12, 17, 0.7)',
+                        borderColor: 'var(--tsi-dark-ruby)'
+                    }
+                ]
+            },
+            options: {
+                ...tooltipConfig,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        min: 0,
+                        max: 10,
+                        title: { display: true, text: '← People-Focused ・ Task-Focused →', font: {size: 14} }
+                    },
+                    y: {
+                        min: 0,
+                        max: 10,
+                        title: { display: true, text: '← Deliberate Pace ・ Fast Pace →', font: {size: 14} }
+                    }
+                },
+                plugins: {
+                    ...tooltipConfig.plugins,
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workplace Personality Assessment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --tsi-black: #000000;
+            --tsi-white: #FFFFFF;
+            --tsi-ruby-red: #E6333A;
+            --tsi-grey: #545454;
+            --tsi-dark-ruby: #7D0C11;
+            --tsi-orange: #ff5c00;
+            --tsi-off-white: #FFF7EC;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--tsi-off-white);
+            color: var(--tsi-black);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+        }
+        .quiz-container {
+            background-color: var(--tsi-white);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            max-width: 700px;
+            width: 100%;
+        }
+        .btn-primary {
+            background-color: var(--tsi-ruby-red);
+            color: var(--tsi-white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--tsi-dark-ruby);
+        }
+        .btn-secondary {
+            background-color: var(--tsi-grey);
+            color: var(--tsi-white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: var(--tsi-black);
+        }
+        .answer-option {
+            background-color: var(--tsi-off-white);
+            border: 2px solid var(--tsi-grey);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .answer-option:hover {
+            background-color: #f0f4f8;
+            border-color: var(--tsi-ruby-red);
+        }
+        .answer-option.selected {
+            background-color: var(--tsi-ruby-red);
+            color: var(--tsi-white);
+            border-color: var(--tsi-ruby-red);
+        }
+        .result-card {
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin-top: 1.5rem;
+        }
+        .panther-result { background-color: rgba(230, 51, 58, 0.1); border: 2px solid var(--tsi-ruby-red); }
+        .peacock-result { background-color: rgba(255, 92, 0, 0.1); border: 2px solid var(--tsi-orange); }
+        .dolphin-result { background-color: rgba(84, 84, 84, 0.1); border: 2px solid var(--tsi-grey); }
+        .owl-result { background-color: rgba(125, 12, 17, 0.1); border: 2px solid var(--tsi-dark-ruby); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="quiz-app" class="quiz-container">
+        <div id="intro-screen">
+            <h1 class="text-3xl font-bold text-center text-tsi-ruby-red mb-4">Unleash Your Inner Animal</h1>
+            <p class="text-center text-tsi-grey mb-6">Discover your dominant workplace personality type: Panther, Peacock, Dolphin, or Owl.</p>
+            <p class="text-center text-tsi-grey mb-8">For each statement, choose the option that best describes you AT WORK. There are 13 questions.</p>
+            <div class="flex justify-center">
+                <button id="start-quiz-btn" class="btn-primary">Start Assessment</button>
+            </div>
+        </div>
+
+        <div id="quiz-screen" class="hidden">
+            <h2 id="question-number" class="text-xl font-bold text-tsi-black mb-4"></h2>
+            <p id="question-text" class="text-lg text-tsi-grey mb-6"></p>
+            <div id="answer-options" class="space-y-4 mb-8">
+                <!-- Answer options will be dynamically loaded here -->
+            </div>
+            <div class="flex justify-between">
+                <button id="prev-btn" class="btn-secondary hidden">Previous</button>
+                <button id="next-btn" class="btn-primary ml-auto">Next</button>
+            </div>
+        </div>
+
+        <div id="results-screen" class="hidden">
+            <h2 class="text-3xl font-bold text-center text-tsi-ruby-red mb-6">Your Workplace Personality Profile</h2>
+            <div id="result-display" class="text-center">
+                <!-- Results will be displayed here -->
+            </div>
+            <div class="flex justify-center mt-8">
+                <button id="retake-quiz-btn" class="btn-primary">Retake Assessment</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "WHAT YOU TALK ABOUT",
+                options: [
+                    { text: "Results, what you want to achieve", type: "Panther" },
+                    { text: "Dreams and aspirations", type: "Peacock" },
+                    { text: "Feelings and experiences", type: "Dolphin" },
+                    { text: "Facts and figures", type: "Owl" }
+                ]
+            },
+            {
+                question: "PACE OF SPEECH / APPEARANCE",
+                options: [
+                    { text: "Very fast / Designer clothes, classy dresser, formal", type: "Panther" },
+                    { text: "Fast / Bold colors, trendy, informal", type: "Peacock" },
+                    { text: "Slower / Gentle, muted colors, casual", type: "Dolphin" },
+                    { text: "Moderate / Conservative, classic dresser, business-like", type: "Owl" }
+                ]
+            },
+            {
+                question: "COMMUNICATION STYLE",
+                options: [
+                    { text: "Direct to the point", type: "Panther" },
+                    { text: "Animated, excitable", type: "Peacock" },
+                    { text: "Dreamy thoughts, casual", type: "Dolphin" },
+                    { text: "Specific, concise", type: "Owl" }
+                ]
+            },
+            {
+                question: "MOTIVATED BY",
+                options: [
+                    { text: "Results", type: "Panther" },
+                    { text: "Applause", type: "Peacock" },
+                    { text: "Approval", type: "Dolphin" },
+                    { text: "Activity", type: "Owl" }
+                ]
+            },
+            {
+                question: "THRIVES ON",
+                options: [
+                    { text: "Pressure, change", type: "Panther" },
+                    { text: "Stimulation, fun", type: "Peacock" },
+                    { text: "Togetherness, support", type: "Dolphin" },
+                    { text: "Accuracy, information", type: "Owl" }
+                ]
+            },
+            {
+                question: "EXPRESSION OF ANGER",
+                options: [
+                    { text: "Aggressive", type: "Panther" },
+                    { text: "Easily frustrated, Can get explosive", type: "Peacock" },
+                    { text: "Gentle", type: "Dolphin" },
+                    { text: "Slow to anger", type: "Owl" }
+                ]
+            },
+            {
+                question: "WORK STYLE",
+                options: [
+                    { text: "Intense, driven", type: "Panther" },
+                    { text: "Likes freedom", type: "Peacock" },
+                    { text: "Easy going, cooperative", type: "Dolphin" },
+                    { text: "Thorough, attention to detail", type: "Owl" }
+                ]
+            },
+            {
+                question: "WORK AREA",
+                options: [
+                    { text: "Work is in priority order / Organized", type: "Panther" },
+                    { text: "Interesting things, gadgets", type: "Peacock" },
+                    { text: "Sentimental mementos and souvenirs", type: "Dolphin" },
+                    { text: "References are at fingertips / Lots of paperwork piles", type: "Owl" }
+                ]
+            },
+            {
+                question: "WORK PACE",
+                options: [
+                    { text: "Works fast - a whirlwind / Likes change", type: "Panther" },
+                    { text: "Faster, bores easily / Moves from one thing to another", type: "Peacock" },
+                    { text: "Rarely in a hurry / Dislikes pressure", type: "Dolphin" },
+                    { text: "Methodical / Steady stream of work", type: "Owl" }
+                ]
+            },
+            {
+                question: "DISLIKES",
+                options: [
+                    { text: "Wasting time", type: "Panther" },
+                    { text: "Reinventing the wheel", type: "Peacock" },
+                    { text: "Confrontation", type: "Dolphin" },
+                    { text: "Being wrong", type: "Owl" }
+                ]
+            },
+            {
+                question: "GROUP ROLE",
+                options: [
+                    { text: "Leader - needs to control", type: "Panther" },
+                    { text: "Rapport builder - needs to be the center of attention", type: "Peacock" },
+                    { text: "Peacemaker - needs to feel included", type: "Dolphin" },
+                    { text: "Information provider - needs focus and direction", type: "Owl" }
+                ]
+            },
+            {
+                question: "WANTS APPRECIATION FOR",
+                options: [
+                    { text: "My productivity", type: "Panther" },
+                    { text: "My contribution", type: "Peacock" },
+                    { text: "My involvement", type: "Dolphin" },
+                    { text: "My quality of work", type: "Owl" }
+                ]
+            },
+            {
+                question: "LIKES TO GET REWARDED WITH",
+                options: [
+                    { text: "Power", type: "Panther" },
+                    { text: "Recognition", type: "Peacock" },
+                    { text: "Approval", type: "Dolphin" },
+                    { text: "Responsibility", type: "Owl" }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let scores = {
+            Panther: 0,
+            Peacock: 0,
+            Dolphin: 0,
+            Owl: 0
+        };
+        let userAnswers = new Array(questions.length).fill(null); // Stores selected option index for each question
+
+        const introScreen = document.getElementById('intro-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const startQuizBtn = document.getElementById('start-quiz-btn');
+        const questionNumberElem = document.getElementById('question-number');
+        const questionTextElem = document.getElementById('question-text');
+        const answerOptionsElem = document.getElementById('answer-options');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const resultDisplayElem = document.getElementById('result-display');
+        const retakeQuizBtn = document.getElementById('retake-quiz-btn');
+
+        const personalityDescriptions = {
+            Panther: {
+                title: "🐾 The Panther: The Driver",
+                description: `
+                    <p class="mb-2"><strong>Origins:</strong> Think of a Panther charging through the jungle – focused, powerful, and ready to pounce. This personality type is all about getting things done and leading the way.</p>
+                    <h4 class="font-bold mb-1">Core Traits:</h4>
+                    <ul class="list-disc list-inside mb-2">
+                        <li><strong>Action-Oriented & Decisive:</strong> Driven, intense, works at a very fast pace. Prioritizes results and what they want to achieve.</li>
+                        <li><strong>Direct Communicator:</strong> Prefers to be clear, specific, and to the point. Speaks in a strong, clear, and confident tone.</li>
+                        <li><strong>Leader & Controller:</strong> Naturally takes on leadership roles and needs to be in control.</li>
+                        <li><strong>Thrives on Challenge:</strong> Energized by tough assignments, challenges, and opportunities to lead. Pressure and change motivate them.</li>
+                    </ul>
+                    <h4 class="font-bold mb-1">What Motivates Them:</h4>
+                    <p class="mb-2">Results, power, and winning. They want appreciation for their productivity.</p>
+                    <h4 class="font-bold mb-1">What Dissatisfies Them:</h4>
+                    <p class="mb-2">Routine, mundane tasks, lack of respect, speaking to people with a lack of authority, and wasting time.</p>
+                    <h4 class="font-bold mb-1">Body Language & Tone:</h4>
+                    <p class="mb-2">They tend to keep their distance, have a strong handshake, lean forward, and maintain direct eye contact. Their tone is strong, clear, confident, and fast-paced.</p>
+                    <h4 class="font-bold mb-1">How to Connect:</h4>
+                    <ul class="list-disc list-inside">
+                        <li>Be direct and business-focused: Get straight to the point and stick to the task at hand.</li>
+                        <li>Be prepared: Have your facts ready and provide alternatives.</li>
+                        <li>Focus on results: Emphasize how your ideas lead to tangible outcomes.</li>
+                        <li>Respect their time: Be mindful of time and don't drag things out.</li>
+                        <li>Challenge ideas, not them: Take issue with facts, not the person.</li>
+                    </ul>
+                `,
+                colorClass: "panther-result"
+            },
+            Peacock: {
+                title: "🦚 The Peacock: The Influencer",
+                description: `
+                    <p class="mb-2"><strong>Origins:</strong> Picture a Peacock displaying its vibrant feathers – confident, expressive, and seeking attention. This personality type thrives on social interaction and inspiring others.</p>
+                    <h4 class="font-bold mb-1">Core Traits:</h4>
+                    <ul class="list-disc list-inside mb-2">
+                        <li><strong>Enthusiastic & Expressive:</strong> Animated, excitable, with an enthusiastic tone and varied modulations. Loves to talk about dreams and aspirations.</li>
+                        <li><strong>People-Oriented:</strong> Thrives on people interactions, a great rapport builder, needs to be the center of attention.</li>
+                        <li><strong>Optimistic & Fun-Loving:</strong> Energized by stimulation and fun.</li>
+                        <li><strong>Social & Persuasive:</strong> Enjoys socializing, persuasive and colorful in communication.</li>
+                    </ul>
+                    <h4 class="font-bold mb-1">What Motivates Them:</h4>
+                    <p class="mb-2">Applause, recognition, and social interactions. They want appreciation for their contribution.</p>
+                    <h4 class="font-bold mb-1">What Dissatisfies Them:</h4>
+                    <p class="mb-2">Social rejection, skepticism, negativity, and reinventing the wheel.</p>
+                    <h4 class="font-bold mb-1">Body Language & Tone:</h4>
+                    <p class="mb-2">They tend to get close, smile, relax, use expressive gestures, and maintain friendly eye contact. Their tone is enthusiastic, fast-paced, and varied.</p>
+                    <h4 class="font-bold mb-1">How to Connect:</h4>
+                    <ul class="list-disc list-inside">
+                        <li>Have fun with them: Engage in lighthearted conversation and support their dreams.</li>
+                        <li>Talk about people and goals: Discuss ideas that involve social recognition or excitement.</li>
+                        <li>Ask for opinions: Make them feel special and included.</li>
+                        <li>Allow time for socializing: Don't rush into business; build a connection first.</li>
+                        <li>Put details in writing: They might focus on the big picture, so important specifics need to be documented.</li>
+                    </ul>
+                `,
+                colorClass: "peacock-result"
+            },
+            Dolphin: {
+                title: "🐬 The Dolphin: The Supporter",
+                description: `
+                    <p class="mb-2"><strong>Origins:</strong> Imagine a Dolphin, calm and cooperative, moving gracefully through water in harmony with its pod. This personality type values stability, harmony, and supporting others.</p>
+                    <h4 class="font-bold mb-1">Core Traits:</h4>
+                    <ul class="list-disc list-inside mb-2">
+                        <li><strong>Calm & Cooperative:</strong> Easy-going, rarely in a hurry, willing to be of service. Tone is warm, soft, and calm.</li>
+                        <li><strong>Harmonious & Loyal:</strong> Natural peacemaker, seeks defined territory and a feeling of security. Dislikes confrontation.</li>
+                        <li><strong>Relationship-Focused:</strong> Prioritizes feelings and experiences, valuing togetherness and support.</li>
+                        <li><strong>Patient:</strong> Takes their time and prefers a steady pace.</li>
+                    </ul>
+                    <h4 class="font-bold mb-1">What Motivates Them:</h4>
+                    <p class="mb-2">Approval, harmony, and opportunities to serve. They want appreciation for their involvement.</p>
+                    <h4 class="font-bold mb-1">What Dissatisfies Them:</h4>
+                    <p class="mb-2">Loss of security, lack of closure, surprises, and having no "home" base.</p>
+                    <h4 class="font-bold mb-1">Body Language & Tone:</h4>
+                    <p class="mb-2">They are relaxed and calm, may lean back, use small gestures, and maintain friendly eye contact. Their tone is steady and low.</p>
+                    <h4 class="font-bold mb-1">How to Connect:</h4>
+                    <ul class="list-disc list-inside">
+                        <li>Start with a personal connection: Listen and build rapport before diving into tasks.</li>
+                        <li>Present logically and non-threateningly: Avoid direct confrontation.</li>
+                        <li>Be patient and provide assurance: Give them time for decisions and address any hurt feelings.</li>
+                        <li>Emphasize security and stability: Reassure them about changes and future plans.</li>
+                    </ul>
+                `,
+                colorClass: "dolphin-result"
+            },
+            Owl: {
+                title: "🦉 The Owl: The Analyst",
+                description: `
+                    <p class="mb-2"><strong>Origins:</strong> Think of a wise Owl, observant and methodical, meticulously analyzing its surroundings. This personality type is precise, detail-oriented, and highly focused on facts and quality.</p>
+                    <h4 class="font-bold mb-1">Core Traits:</h4>
+                    <ul class="list-disc list-inside mb-2">
+                        <li><strong>Analytical & Accurate:</strong> Thorough, pays attention to detail, prefers facts and figures. Energized by analysis and research.</li>
+                        <li><strong>Quality-Oriented:</strong> Insists on quality standards and compliance to rules.</li>
+                        <li><strong>Information Provider:</strong> Needs focus and direction, relies on references and lots of paperwork.</li>
+                        <li><strong>Controlled & Precise:</strong> Tone is controlled, thoughtful, and precise, with little modulation.</li>
+                    </ul>
+                    <h4 class="font-bold mb-1">What Motivates Them:</h4>
+                    <p class="mb-2">Information, quality standards, and responsibility. They want appreciation for their quality of work.</p>
+                    <h4 class="font-bold mb-1">What Dissatisfies Them:</h4>
+                    <p class="mb-2">Personal criticism, moving too fast, and decisions made without data or facts. Being wrong is a major dissatisfier.</p>
+                    <h4 class="font-bold mb-1">Body Language & Tone:</h4>
+                    <p class="mb-2">They tend to keep their distance, sit across from you, have a firm posture, and maintain direct eye contact with minimal hand gestures. Their tone is slow-paced.</p>
+                    <h4 class="font-bold mb-1">How to Connect:</h4>
+                    <ul class="list-disc list-inside">
+                        <li>Prepare your case thoroughly: Provide ample information, data, and facts.</li>
+                        <li>Approach directly but thoughtfully: Be straightforward and present specifics.</li>
+                        <li>Give time for decisions: They need time to analyze and research.</li>
+                        <li>Be loyal, fair, and consistent: They value integrity and predictability.</li>
+                    </ul>
+                `,
+                colorClass: "owl-result"
+            }
+        };
+
+        function showScreen(screenId) {
+            introScreen.classList.add('hidden');
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        function renderQuestion() {
+            const questionData = questions[currentQuestionIndex];
+            questionNumberElem.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            questionTextElem.textContent = questionData.question;
+            answerOptionsElem.innerHTML = '';
+
+            questionData.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = `answer-option p-4 rounded-lg cursor-pointer transition-all duration-200 ${userAnswers[currentQuestionIndex] === index ? 'selected' : ''}`;
+                optionDiv.textContent = option.text;
+                optionDiv.dataset.index = index;
+                optionDiv.addEventListener('click', () => selectAnswer(index));
+                answerOptionsElem.appendChild(optionDiv);
+            });
+
+            prevBtn.classList.toggle('hidden', currentQuestionIndex === 0);
+            nextBtn.textContent = currentQuestionIndex === questions.length - 1 ? 'Show Results' : 'Next';
+        }
+
+        function selectAnswer(optionIndex) {
+            userAnswers[currentQuestionIndex] = optionIndex;
+            const options = answerOptionsElem.children;
+            for (let i = 0; i < options.length; i++) {
+                options[i].classList.remove('selected');
+            }
+            options[optionIndex].classList.add('selected');
+        }
+
+        function calculateResults() {
+            scores = { Panther: 0, Peacock: 0, Dolphin: 0, Owl: 0 };
+
+            userAnswers.forEach((answerIndex, qIndex) => {
+                if (answerIndex !== null) {
+                    const selectedType = questions[qIndex].options[answerIndex].type;
+                    scores[selectedType]++;
+                }
+            });
+
+            let maxScore = 0;
+            for (const type in scores) {
+                if (scores[type] > maxScore) {
+                    maxScore = scores[type];
+                }
+            }
+
+            const dominantTypes = [];
+            for (const type in scores) {
+                if (scores[type] === maxScore && maxScore > 0) {
+                    dominantTypes.push(type);
+                }
+            }
+
+            resultDisplayElem.innerHTML = '';
+
+            if (dominantTypes.length === 0) {
+                resultDisplayElem.innerHTML = `
+                    <p class="text-lg text-tsi-grey mb-4">It looks like you didn't select enough answers to determine a dominant type. Please retake the assessment!</p>
+                `;
+            } else if (dominantTypes.length === 1) {
+                const type = dominantTypes[0];
+                const desc = personalityDescriptions[type];
+                resultDisplayElem.innerHTML = `
+                    <div class="result-card ${desc.colorClass} text-left">
+                        <h3 class="text-2xl font-bold text-tsi-black mb-2">${desc.title}</h3>
+                        <div class="text-tsi-grey text-base">${desc.description}</div>
+                    </div>
+                    <p class="mt-4 text-tsi-grey text-sm">You scored highest as a ${type} with ${scores[type]} points.</p>
+                `;
+            } else {
+                let resultHtml = `
+                    <p class="text-lg text-tsi-grey mb-4">You have a blend of dominant types!</p>
+                    <p class="text-tsi-grey mb-6">Your top personalities are:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                `;
+                dominantTypes.forEach(type => {
+                    const desc = personalityDescriptions[type];
+                    resultHtml += `
+                        <div class="result-card ${desc.colorClass} text-left">
+                            <h3 class="text-xl font-bold text-tsi-black mb-1">${desc.title}</h3>
+                            <div class="text-tsi-grey text-sm">${desc.description}</div>
+                            <p class="mt-2 text-tsi-grey text-xs">Score: ${scores[type]} points</p>
+                        </div>
+                    `;
+                });
+                resultHtml += `</div>`;
+                resultDisplayElem.innerHTML = resultHtml;
+            }
+            showScreen('results-screen');
+        }
+
+        function resetQuiz() {
+            currentQuestionIndex = 0;
+            scores = { Panther: 0, Peacock: 0, Dolphin: 0, Owl: 0 };
+            userAnswers.fill(null);
+            showScreen('intro-screen');
+        }
+
+        startQuizBtn.addEventListener('click', () => {
+            showScreen('quiz-screen');
+            renderQuestion();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (userAnswers[currentQuestionIndex] === null) {
+                alert('Please select an answer before proceeding!');
+                return;
+            }
+
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                calculateResults();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        });
+
+        retakeQuizBtn.addEventListener('click', resetQuiz);
+
+        showScreen('intro-screen');
+    </script>
+</body>
+</html>
