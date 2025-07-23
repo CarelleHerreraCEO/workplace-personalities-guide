@@ -1,2 +1,2 @@
-# workplace-personalities-guide
+# Workplace-Personalities
 Unleash your inner animal!
